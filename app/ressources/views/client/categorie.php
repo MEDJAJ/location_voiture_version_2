@@ -25,13 +25,26 @@ exit;
     <title>MaBagnole - Catégories</title>
 </head>
 <body class="bg-slate-50">
-    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 px-6 py-4 flex justify-between items-center">
-        <div class="text-2xl font-black text-indigo-600 tracking-tighter">MaBagnole</div>
-        <div class="hidden md:flex gap-8 font-bold text-gray-600">
-            <a href="categorie.php" class="text-indigo-600">Nos Catégories</a>
-            <a href="mes_avis.php" class="hover:text-indigo-600">Mes Avis</a>
+   <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100 px-8 py-5 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <div class="bg-indigo-600 p-1.5 rounded-lg">
+                <i class="fas fa-car-side text-white text-xl"></i>
+            </div>
+            <div class="text-2xl font-black text-slate-900 tracking-tighter">MaBagnole<span class="text-indigo-600">.</span></div>
         </div>
-        <button class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 font-bold"><?= $nom[0].$nom[1]  ?></button>
+        
+        <div class="hidden md:flex gap-10 font-bold text-slate-600 items-center">
+            <a href="#" class="text-indigo-600 relative after:content-[''] after:absolute after:-bottom-2 after:left-0 after:w-full after:h-1 after:bg-indigo-600 after:rounded-full">Nos Véhicules</a>
+            <a href="mes_avis.php" class="hover:text-indigo-600 transition-colors">Mes Avis</a>
+            <a href="theme.php" class="hover:text-indigo-600 transition-colors">Blog</a>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <span class="hidden sm:block text-sm font-bold text-slate-500">Bonjour, Utilisateur</span>
+            <button class="w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white font-bold shadow-lg shadow-indigo-200 ring-4 ring-white">
+                UT
+            </button>
+        </div>
     </nav>
 
     <main class="max-w-7xl mx-auto px-6 py-12">

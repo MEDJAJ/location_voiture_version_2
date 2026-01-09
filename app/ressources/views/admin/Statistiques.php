@@ -82,6 +82,23 @@ $nom=$_SESSION['nom'];
                 <i class="fas fa-star text-slate-400 group-hover:text-indigo-400"></i>
                 <span class="font-medium">Avis Clients</span>
             </a>
+
+            <a href="theme.php" class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-white/10 group">
+                <i class="fas fa-star text-slate-400 group-hover:text-indigo-400"></i>
+                <span class="font-medium">Thémes</span>
+            </a>
+              <a href="approver_article.php" class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-white/10 group">
+                <i class="fas fa-palette text-white"></i>
+                <span>Articles</span>
+            </a>
+             <a href="gestion_tags.php" class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-white/10 group">
+                <i class="fas fa-file-signature text-white"></i>
+                <span>Tags</span>
+            </a>
+              <a href="gestion_commentaire.php" class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-white/10 group">
+                <i class="fas fa-comments text-white"></i>
+                <span>Commentaires</span>
+            </a>
         </nav>
     </div>
 
