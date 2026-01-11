@@ -1,23 +1,4 @@
 
-<?php
-require_once '../../../includes/config.php';
-require_once '../../../includes/classes/tag.php';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    if (!empty($_POST['tag_names'])) {
-        foreach ($_POST['tag_names'] as $name) {
-
-            if (!empty(trim($name))) {
-                $tag = new Tag(trim($name));
-                $tag->ajouterTag($conn);
-            }
-        }
-    }
-}
-$tages=Tag::afficherTags($conn);
-
-?>
 
 <!DOCTYPE html>
 <html lang="fr">
