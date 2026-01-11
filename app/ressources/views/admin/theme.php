@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     }
 }
 
-
+$themes=Theme::afficherthemes($conn);
 
 
 
