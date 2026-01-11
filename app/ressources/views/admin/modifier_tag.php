@@ -1,34 +1,5 @@
 
 
-<?php
-require_once '../../../includes/config.php';
-require_once '../../../includes/classes/tag.php';
-
-$id=isset($_GET['id']) ? $_GET['id'] : 0;
-
-if($id==0){
-die("cette id not introvable");
-}
-
-$tag = Tag::getTagById($conn,$id);
-if (!$tag) {
-    die("Theme non trouvée");
-}
-
-
-if (isset($_POST['modifier'])) {
-   $nom=trim($_POST['nom']);
-    $res = new Tag($nom,$id);
-   if($res->modifierTag($conn)){
-     header("Location: gestion_tags.php");
-      exit;
-   }else{
-die('cette operation echoué pou modifier cette tag');
-   }
-
-   
-}
-
 
 
 ?>
