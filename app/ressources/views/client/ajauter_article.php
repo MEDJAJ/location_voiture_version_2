@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
        echo "error de l'insertion de article tag";
         }
     }
- header('Location: articles.php?id='.$id.'&nom_theme='.$nom_theme);
+ header('Location: attente.php?id='.$id.'&nom_theme='.$nom_theme);
                 exit;
     
 }
@@ -124,9 +124,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="pt-4">
-                <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-slate-900 shadow-xl shadow-indigo-200 transition-all transform hover:-translate-y-1">
+             
+                    <button type="submit" class="w-full py-5 bg-indigo-600 text-white rounded-[1.5rem] font-black uppercase tracking-widest hover:bg-slate-900 shadow-xl shadow-indigo-200 transition-all transform hover:-translate-y-1">
                     <i class="fas fa-paper-plane mr-2"></i> Publier l'article
                 </button>
+              
+                
             </div>
 
         </form>

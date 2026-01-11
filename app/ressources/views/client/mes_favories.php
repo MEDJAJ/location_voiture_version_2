@@ -1,3 +1,37 @@
+<?php
+session_start();
+require_once '../../../includes/config.php';
+require_once '../../../includes/classes/article.php';
+require_once '../../../includes/classes/favorite.php';
+
+$id_user= $_SESSION['id_user'];
+$nom_theme=$_GET['nom_theme'];
+$page=max($_GET['page']?? 1,1);
+$limit=3;
+$offset=(int)($page-1)*$limit;
+$totaleFavorite=Favorite::countArticlesAusFovorie($conn,$id_user);
+$totalPages=ceil($totaleFavorite/$limit);
+$articles_aux_favorite=Favorite::afficherArticlesAuxFavories($conn,$id_user,$limit,$offset);
+
+$id=isset($_GET['id']) ? $_GET['id'] :0;
+if(!$id){
+    die("cette id intovable");
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+    $id_article=$_POST['article'];
+        $favoris=new Favorite($id_user,$id_article); 
+        if(!$favoris->supprimerArticleAuxF($conn)){
+           die("Errore de supperesion");
+            }else{
+                header('Location: mes_favories.php?id='.$id.''.'&nom_theme='.$nom_theme.'&page='.$page);
+            }
+}
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -20,7 +54,7 @@
         <div class="flex items-center gap-2 text-2xl font-black text-slate-900 tracking-tighter">
             <span class="text-indigo-600"><i class="fas fa-car-side"></i></span> MaBagnole
         </div>
-        <a href="articles.php" class="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors">
+        <a href="articles.php?id=<?= $id ?>&nom_theme=<?= $nom_theme ?>" class="text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors">
             <i class="fas fa-times mr-2"></i> Annuler
         </a>
     </nav>
@@ -38,97 +72,71 @@
                 <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">Articles Enregistrés</h1>
             </div>
             <p class="text-slate-400 text-sm font-medium bg-white px-4 py-2 rounded-full border border-slate-100 shadow-sm">
-                <span class="text-indigo-600 font-bold">12</span> articles au total
+                <span class="text-indigo-600 font-bold"><?= count($articles_aux_favorite) ?></span> articles au total
             </p>
         </header>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             
+
+<?php   if(count($articles_aux_favorite)>0){
+    foreach($articles_aux_favorite as $row){ 
+             ?>
+
+
             <div class="fav-card bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm transition-all duration-300 flex flex-col relative group">
-                <button class="absolute top-6 right-6 w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:scale-110 transition-transform">
+             <form action="" method="POST">
+                <input name="article" type="text"  value="<?=$row['id_article'] ?>"  class="hidden"/>
+                   <button class="absolute top-6 right-6 w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:scale-110 transition-transform">
                     <i class="fas fa-heart"></i>
                 </button>
+             </form>
 
                 <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-6 text-xl">
                     <i class="fas fa-bolt"></i>
                 </div>
 
                 <div class="flex-grow">
-                    <span class="text-[10px] font-black px-3 py-1 bg-slate-50 text-slate-400 rounded-full uppercase tracking-tighter mb-4 inline-block">Mobilité Électrique</span>
-                    <h3 class="text-xl font-extrabold text-slate-800 mb-4 leading-tight group-hover:text-indigo-600 transition-colors">L'autonomie révolutionnaire des batteries solid-state</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed mb-6">Découvrez comment cette nouvelle technologie va changer votre façon de voyager en 2026 sans compromis sur le temps de charge...</p>
+                    <span class="text-[10px] font-black px-3 py-1 bg-slate-50 text-slate-400 rounded-full uppercase tracking-tighter mb-4 inline-block">Crée Par : <?= $row['nom'] ?></span>
+                    <h3 class="text-xl font-extrabold text-slate-800 mb-4 leading-tight group-hover:text-indigo-600 transition-colors"><?= $row['titre'] ?></h3>
+                    <p class="text-slate-500 text-sm leading-relaxed mb-6"><?= $row['contenu'] ?>...</p>
                 </div>
 
                 <div class="pt-6 border-t border-slate-50 flex items-center justify-between">
-                    <span class="text-[10px] font-bold text-slate-400 italic">15 Janvier 2026</span>
+                    <span class="text-[10px] font-bold text-slate-400 italic"><?= $row['date_creation'] ?></span>
                     <a href="#" class="text-indigo-600 font-bold text-xs flex items-center gap-2 group/link">
                         Lire l'article <i class="fas fa-arrow-right text-[10px] group-hover/link:translate-x-1 transition-transform"></i>
                     </a>
                 </div>
             </div>
 
-            <div class="fav-card bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm transition-all duration-300 flex flex-col relative group">
-                <button class="absolute top-6 right-6 w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center">
-                    <i class="fas fa-heart"></i>
-                </button>
 
-                <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-6 text-xl">
-                    <i class="fas fa-crown"></i>
-                </div>
+<?php  }     }     ?>
 
-                <div class="flex-grow">
-                    <span class="text-[10px] font-black px-3 py-1 bg-slate-50 text-slate-400 rounded-full uppercase tracking-tighter mb-4 inline-block">Luxe & Prestige</span>
-                    <h3 class="text-xl font-extrabold text-slate-800 mb-4 leading-tight group-hover:text-amber-600 transition-colors">Top 10 des Berlines les plus confortables</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed mb-6">Nous avons testé le confort acoustique et les suspensions des modèles les plus prestigieux du marché européen.</p>
-                </div>
 
-                <div class="pt-6 border-t border-slate-50 flex items-center justify-between">
-                    <span class="text-[10px] font-bold text-slate-400 italic">12 Janvier 2026</span>
-                    <a href="#" class="text-amber-600 font-bold text-xs flex items-center gap-2 group/link">
-                        Lire l'article <i class="fas fa-arrow-right text-[10px] group-hover/link:translate-x-1 transition-transform"></i>
-                    </a>
-                </div>
-            </div>
-
-            <div class="fav-card bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm transition-all duration-300 flex flex-col relative group">
-                <button class="absolute top-6 right-6 w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center">
-                    <i class="fas fa-heart"></i>
-                </button>
-
-                <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-6 text-xl">
-                    <i class="fas fa-screwdriver-wrench"></i>
-                </div>
-
-                <div class="flex-grow">
-                    <span class="text-[10px] font-black px-3 py-1 bg-slate-50 text-slate-400 rounded-full uppercase tracking-tighter mb-4 inline-block">Entretien</span>
-                    <h3 class="text-xl font-extrabold text-slate-800 mb-4 leading-tight group-hover:text-emerald-600 transition-colors">Comment préparer son véhicule pour l'hiver</h3>
-                    <p class="text-slate-500 text-sm leading-relaxed mb-6">Les points de contrôle essentiels : pneus, liquides, batterie et visibilité pour rouler en toute sécurité sous la neige.</p>
-                </div>
-
-                <div class="pt-6 border-t border-slate-50 flex items-center justify-between">
-                    <span class="text-[10px] font-bold text-slate-400 italic">08 Janvier 2026</span>
-                    <a href="#" class="text-emerald-600 font-bold text-xs flex items-center gap-2 group/link">
-                        Lire l'article <i class="fas fa-arrow-right text-[10px] group-hover/link:translate-x-1 transition-transform"></i>
-                    </a>
-                </div>
-            </div>
+        
 
         </div>
 
         <div class="flex justify-center items-center gap-2">
-            <button class="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-all">
+           <?php   for($i=1;$i<=$totalPages;$i++){   
+            
+            ?>
+
+       
+            <!-- <button class="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-all">
                 <i class="fas fa-chevron-left text-xs"></i>
-            </button>
+            </button> -->
+            <a href="?page=<?= $i ?>&nom_theme=<?= $nom_theme ?>&id=<?= $id ?>">
+            <button class="<?= ($page==$i) ?  'page-link page-active w-12 h-12 rounded-2xl font-bold transition-all text-sm' :  'page-link w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 font-bold transition-all text-sm' ?>"><?= $i ?></button>
+            </a>
+           
             
-            <button class="page-link page-active w-12 h-12 rounded-2xl font-bold transition-all text-sm">1</button>
-            <button class="page-link w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 font-bold transition-all text-sm">2</button>
-            <button class="page-link w-12 h-12 rounded-2xl bg-white border border-slate-100 text-slate-600 font-bold transition-all text-sm">3</button>
-            
-            <span class="mx-2 text-slate-300 font-bold">...</span>
-            
-            <button class="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-all text-sm">
+       
+            <!-- <button class="w-12 h-12 rounded-2xl bg-white border border-slate-100 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-all text-sm">
                 <i class="fas fa-chevron-right text-xs"></i>
-            </button>
+            </button> -->
+          <?php     } ?>
         </div>
 
     </main>

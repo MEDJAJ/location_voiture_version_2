@@ -40,19 +40,19 @@ class Vehicle{
         }
     } 
 
-    public static function getById($conn, $idVehicule, $idCategorie) {
+    public static function getById($conn, $idVehicule) {
     
     $stmt = $conn->prepare(
         "SELECT * 
          FROM ListeVehicules 
          WHERE id_vehicule = :idVehicule 
-           AND id_categorie = :idCategorie"
+           "
     );
 
   
     $stmt->execute([
-        ':idVehicule' => $idVehicule,
-        ':idCategorie' => $idCategorie
+        ':idVehicule' => $idVehicule
+       
     ]);
 
    

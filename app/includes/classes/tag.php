@@ -67,4 +67,11 @@ class Tag {
      $stm=$conn->prepare($sql);
      return $stm->execute([':nom_tag'=>$this->nom_tag,':id'=>$this->id_tag]);
     }
+
+    public static function getCountTag($conn){
+      $sql="SELECT * FROM tag ";
+      $stm=$conn->prepare($sql);
+      $stm->execute();
+      return count($stm->fetchAll(PDO::FETCH_ASSOC));
+    }
 }

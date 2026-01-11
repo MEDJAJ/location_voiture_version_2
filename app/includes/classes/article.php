@@ -108,7 +108,7 @@ class Article
     a.id_theme
 FROM article a
 LEFT JOIN articletag ta ON a.id_article = ta.id_article
-LEFT JOIN tag t ON ta.id_tag = t.id_tag WHERE a.id_theme=:id 
+LEFT JOIN tag t ON ta.id_tag = t.id_tag WHERE a.id_theme=:id AND a.etat='PUBLIE'
 ORDER BY a.id_article";
 
     $stmt = $pdo->prepare($sql);
@@ -225,6 +225,20 @@ $articles_tags=$stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 
+ public static function getCountArticleApp($conn){
+      $sql="SELECT * FROM article WHERE etat='PUBLIE' ";
+      $stm=$conn->prepare($sql);
+      $stm->execute();
+      return count($stm->fetchAll(PDO::FETCH_ASSOC));
+    }
+
+
+ public static function getCountArticleDesapp($conn){
+      $sql="SELECT * FROM article WHERE etat!='PUBLIE' ";
+      $stm=$conn->prepare($sql);
+      $stm->execute();
+      return count($stm->fetchAll(PDO::FETCH_ASSOC));
+    }
 
 
 

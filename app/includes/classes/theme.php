@@ -84,6 +84,13 @@ class Theme{
         ":id"=>$this->id
       ]);
     }
+
+    public static function getCountTheme($conn){
+      $sql="SELECT * FROM theme ";
+      $stm=$conn->prepare($sql);
+      $stm->execute();
+      return count($stm->fetchAll(PDO::FETCH_ASSOC));
+    }
 }
 
 

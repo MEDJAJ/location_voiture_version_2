@@ -4,6 +4,7 @@ require_once '../../../includes/config.php';
 require_once '../../../includes/classes/article.php';
 require_once '../../../includes/classes/commentaire.php';
 require_once '../../../includes/classes/tag.php';
+require_once '../../../includes/classes/favorite.php';
 
 $id=isset($_GET['id']) ? $_GET['id'] :0;
 if(!$id){
@@ -13,6 +14,7 @@ $articles_with_tags=Article::getArticlesWithTags($conn,$id);
 
 $id_user= $_SESSION['id_user'];
 
+$nom_theme= $_GET['nom_theme'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     if(isset($_POST['envoyer_c'])){
@@ -22,7 +24,7 @@ $commentaire=new Commentaire($commentaire);
 if(!$commentaire->ajauterCommetaire($conn,$id_user,$id_art)){
  die("cette insertion de commentaire faild");
 }else{
-    header('Location: articles.php?id='.$id);
+    header('Location: articles.php?id='.$id.'&nom_theme='.$nom_theme);
     exit;
 }
     }elseif(isset($_POST['recherche'])){
@@ -32,7 +34,21 @@ if(!$commentaire->ajauterCommetaire($conn,$id_user,$id_art)){
 } else {
     $articles_with_tags = Article::getArticlesWithTags($conn, $id);
 }
+    }elseif(isset($_POST['heart'])){
+        $id_article=trim($_POST['id_article']);
+        $favoris=new Favorite($id_user,$id_article);
+        if($favoris->verifierArticleAuxF($conn)){
+            if(!$favoris->supprimerArticleAuxF($conn)){
+           die("Errore de supperesion");
+            }
+        }else{
+            $favoris->ajouterArticleAuxFavoris($conn);
+        }
+        
     }
+
+
+
 
 
 
@@ -85,14 +101,14 @@ $tags=Tag::afficherTags($conn);
             <span class="text-indigo-600"><i class="fas fa-car-side"></i></span> MaBagnole
         </div>
         <div class="flex items-center gap-4">
-            <a href="ajauter_article.php?id=<?= $id ?>&nom_theme=<?= $_GET['nom_theme'] ?>">
+            <a href="ajauter_article.php?id=<?= $id ?>&nom_theme=<?= $nom_theme ?>">
 <button title="Publier un article" class="hidden md:flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl font-bold text-xs hover:bg-indigo-600 transition-all">
                 <i class="fas fa-plus"></i> Nouveau
             </button>
             </a>
             
 
-            <a href="mes_favories.php">
+            <a href="mes_favories.php?id=<?= $id ?>&nom_theme=<?= $nom_theme ?>">
                 <button title="Explorer les favoris" class="heart-btn heart-active w-10 h-10 rounded-full border flex items-center justify-center transition-all">
                     <i class="fas fa-heart text-sm"></i>
                 </button>
@@ -121,18 +137,27 @@ $tags=Tag::afficherTags($conn);
 
 
 
- <form action="" method="POST">
-       <input  name="search"
-      type="text" 
-      placeholder="Rechercher un article par titre..."
-      class="flex-1 px-4 py-3 bg-transparent outline-none text-sm font-medium text-slate-700"
+ <form action="" method="POST" class="flex items-center w-full bg-slate-50 rounded-2xl overflow-hidden ">
+    
+  
+
+    <input 
+        name="search"
+        type="text" 
+        placeholder="Rechercher un article par titre..."
+        class="flex-1 px-4 py-3 bg-transparent outline-none text-sm font-medium text-slate-700"
     >
-    <button type="submit" name="recherche"
-      class="mr-2 px-5 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-all"
+
+    <button 
+        type="submit" 
+        name="recherche"
+        class="px-5 py-2 mr-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-all"
     >
-      Rechercher
+        Rechercher
     </button>
- </form>
+
+</form>
+
 
   </div>
 
@@ -174,9 +199,26 @@ $tags=Tag::afficherTags($conn);
                                 ?>
                             <span class="text-[10px] font-bold text-slate-400">#<?= $tag->getNomTag() ?></span>
                             <?php   } } ?>
-                            <button title="Ajouter aux favoris" class="heart-btn w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 hover:border-red-100 transition-all">
+                            
+                                   <form action="" method="POST">
+                                      <input value="<?= $row->getId() ?>" class="hidden"  type="text" name="id_article"/>
+                                    <?php   
+                                    $favoris_check=new Favorite($id_user,$row->getId());
+                                   if($favoris_check->verifierArticleAuxF($conn)){
+                                    ?>
+                                    <button type="submit" name="heart"  title="Ajouter aux favoris" class="heart-btn w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 text-red-500 hover:text-red-500 bg-red-50 hover:bg-red-50 border-red-100 hover:border-red-100 transition-all">
+                                <i class="fas fa-heart text-sm text-red-500"></i>
+                            </button>
+
+                            <?php }else{   ?>
+
+<button type="submit" name="heart"  title="Ajouter aux favoris" class="heart-btn w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400  hover:text-red-500  hover:bg-red-50  hover:border-red-100 transition-all">
                                 <i class="fas fa-heart text-sm"></i>
                             </button>
+
+                                <?php } ?>
+                                   </form>
+    
                         </div>
                     </div>
 
@@ -212,20 +254,56 @@ if(count($commentaire_par_articles)>0){
 
  
 ?>
+
   <div class="flex bg-white rounded-xl shadow-md p-4 w-full hover:shadow-lg transition-shadow duration-300">
-    <img class="w-12 h-12 rounded-full border-2 border-indigo-500 object-cover mr-4" 
-         src="https://randomuser.me/api/portraits/men/32.jpg" 
-         alt="Photo utilisateur">
-    <div class="flex-1">
-      <div class="flex justify-between items-center mb-1">
-        <span class="font-semibold text-gray-800"><?= $comtaire_article['nom'] ?></span>
-        <span class="text-xs text-gray-500"><?= $comtaire_article['date_creation'] ?></span>
+  
+
+  <img class="w-12 h-12 rounded-full border-2 border-indigo-500 object-cover mr-4" 
+       src="https://randomuser.me/api/portraits/men/32.jpg" 
+       alt="Photo utilisateur">
+
+
+  <div class="flex-1">
+    
+    <div class="flex justify-between items-center mb-1">
+      <span class="font-semibold text-gray-800">
+        <?= $comtaire_article['nom'] ?>
+      </span>
+
+      <div class="flex items-center gap-3">
+        <span class="text-xs text-gray-500">
+          <?= $comtaire_article['date_creation'] ?>
+        </span>
+
+        <?php    if($comtaire_article['id_user']==$id_user){
+
+         ?>
+        <a href="modifier_commentaire.php?id=<?= $comtaire_article['id_commentaire'] ?>&id_theme=<?= $id ?>&nom_theme=<?= $nom_theme ?>"
+           class="text-blue-500 hover:text-blue-700 text-sm transition-colors"
+           title="Modifier">
+          <i class="fas fa-edit"></i>
+        </a>
+
+  
+        <form method="POST" action="supprimer_commentaire.php?id=<?= $comtaire_article['id_commentaire'] ?>&id_theme=<?= $id ?>&nom_theme=<?= $nom_theme ?>" onsubmit="return confirm('Voulez-vous vraiment supprimer ce commentaire ?');">
+          <input type="hidden" name="id_commentaire" value="<?= $comtaire_article['id_commentaire'] ?>">
+          <button type="submit"
+                  class="text-red-500 hover:text-red-700 text-sm transition-colors"
+                  title="Supprimer">
+            <i class="fas fa-trash"></i>
+          </button>
+        </form>
+        <?php  }  ?>
       </div>
-      <p class="text-gray-700 text-sm leading-relaxed">
-       <?= $comtaire_article['contenu']   ?>
-      </p>
     </div>
+
+    <p class="text-gray-700 text-sm leading-relaxed">
+      <?= $comtaire_article['contenu'] ?>
+    </p>
+
   </div>
+</div>
+
 
 <?php      }
 }   ?>

@@ -27,7 +27,7 @@ class Commentaire{
     }
 
 
-    public static function getCommentaireById($conn, int $id)
+    public static function getCommentaireById($conn, $id)
 {
     $sql = "SELECT contenu FROM commentaire WHERE id_commentaire = :id";
     $stmt = $conn->prepare($sql);
@@ -58,7 +58,7 @@ public function ajauterCommetaire($conn,$id_client,$id_article){
 
 
  public static function afficherCommentairesParArticle($conn,$id_article){
-        $sql="SELECT c.contenu,c.date_creation,u.nom,a.titre,a.id_article,c.id_commentaire FROM commentaire c INNER JOIN users u ON u.id_user=c.id_client INNER JOIN article a ON c.id_article=a.id_article WHERE a.id_article=:id_article";
+        $sql="SELECT c.contenu,c.date_creation,u.nom,a.titre,a.id_article,c.id_commentaire,u.id_user FROM commentaire c INNER JOIN users u ON u.id_user=c.id_client INNER JOIN article a ON c.id_article=a.id_article WHERE a.id_article=:id_article";
         $stm=$conn->prepare($sql);
         $stm->execute([':id_article'=>$id_article]);
         return $stm->fetchAll(PDO::FETCH_ASSOC);

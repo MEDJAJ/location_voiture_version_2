@@ -6,6 +6,10 @@ require_once '../../../includes/classes/vehicule.php';
 require_once '../../../includes/classes/Categorie.php';
 require_once '../../../includes/classes/client.php';
 
+require_once '../../../includes/classes/theme.php';
+require_once '../../../includes/classes/tag.php';
+require_once '../../../includes/classes/article.php';
+
 $coun_v=Vehicle::countVehicule($conn);
 $coun_v_disp=Vehicle::countVehiculeDisponble($conn);
 $coun_v_indisp=Vehicle::countVehiculeIndisponible($conn);
@@ -20,7 +24,10 @@ $count_categories=Categorie::countCategorie($conn);
 $count_cat_dis=Categorie::countCategorieDisponble($conn);
 $count_cat_ind=Categorie::countCategorieIndisponible($conn);
 
-
+$count_theme=Theme::getCountTheme($conn);
+$count_tag=Tag::getCountTag($conn);
+$count_article_app=Article::getCountArticleApp($conn);
+$count_article_desapp=Article::getCountArticleDesapp($conn);
 $nom=$_SESSION['nom'];
 ?>
 
@@ -52,65 +59,77 @@ $nom=$_SESSION['nom'];
 
 <body class="bg-[#f8fafc] flex min-h-screen text-slate-900">
 
-<aside class="w-72 sidebar-gradient text-white flex flex-col shadow-2xl overflow-hidden sticky top-0 h-screen">
-    <div class="p-8">
-        <div class="flex items-center gap-3 mb-10">
-            <div class="bg-indigo-500 p-2 rounded-xl shadow-lg shadow-indigo-500/50">
-                <i class="fas fa-car-side text-2xl"></i>
+
+    <aside class="w-72 sidebar-gradient text-white flex flex-col shadow-2xl sticky top-0 h-screen z-50">
+        <div class="p-8">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="bg-indigo-500 p-2 rounded-xl shadow-lg shadow-indigo-500/50">
+                    <i class="fas fa-car-side text-2xl"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight">MaBagnole <span class="text-indigo-400">Pro</span></span>
             </div>
-            <span class="text-xl font-bold tracking-tight">MaBagnole <span class="text-indigo-400">Pro</span></span>
+
+            <nav class="space-y-1.5 custom-scrollbar overflow-y-auto max-h-[calc(100vh-250px)]">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-4 ml-3">Menu Principal</p>
+                
+                <a href="Statistiques.php" class="flex items-center gap-4 p-3 rounded-xl bg-indigo-600 shadow-lg shadow-indigo-600/30 font-bold italic">
+                    <i class="fas fa-chart-pie w-5 text-slate-400 group-hover:text-indigo-400"></i>
+                    <span class="font-medium">Statistiques</span>
+                </a>
+
+                <a href="vehicules.php" class="flex items-center gap-4 p-3 rounded-xl transition-all hover:bg-white/10 group">
+                    <i class="fas fa-car w-5 text-slate-400 group-hover:text-indigo-400"></i>
+                    <span class="font-medium">Véhicules</span>
+                </a>
+
+                <a href="categories.php" class="flex items-center gap-4 p-3 rounded-xl transition-all hover:bg-white/10 group">
+                    <i class="fas fa-layer-group w-5 text-slate-400 group-hover:text-indigo-400"></i>
+                    <span class="font-medium">Catégories</span>
+                </a>
+
+                <a href="reservations.php" class="flex items-center gap-4 p-3 rounded-xl transition-all hover:bg-white/10 group">
+                    <i class="fas fa-calendar-check w-5 text-slate-400 group-hover:text-indigo-400"></i>
+                    <span class="font-medium">Réservations</span>
+                </a>
+
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mt-8 mb-4 ml-3">Contenu & Blog</p>
+
+                <a href="theme.php" class="flex items-center gap-4 p-3 rounded-xl transition-all hover:bg-white/10 group">
+                    <i class="fas fa-palette w-5 text-slate-400 group-hover:text-indigo-400"></i>
+                    <span class="font-medium">Thèmes</span>
+                </a>
+
+                <a href="approver_article.php" class="flex items-center gap-4 p-3 rounded-xl transition-all hover:bg-white/10 group">
+                    <i class="fas fa-file-signature w-5 text-slate-400 group-hover:text-indigo-400"></i>
+                    <span class="font-medium">Approuver Articles</span>
+                </a>
+
+                <a href="gestion_tags.php" class="flex items-center gap-4 p-3 rounded-xl transition-all hover:bg-white/10 group">
+                    <i class="fas fa-hashtag w-5 text-white"></i>
+                    <span>Gestion des Tags</span>
+                </a>
+
+                <a href="gestion_commentaire.php" class="flex items-center gap-4 p-3 rounded-xl transition-all hover:bg-white/10 group">
+                    <i class="fas fa-comments w-5 text-slate-400 group-hover:text-indigo-400"></i>
+                    <span class="font-medium">Commentaires</span>
+                </a>
+
+                <a href="avis.php" class="flex items-center gap-4 p-3 rounded-xl transition-all hover:bg-white/10 group">
+                    <i class="fas fa-star w-5 text-slate-400 group-hover:text-indigo-400"></i>
+                    <span class="font-medium">Avis Clients</span>
+                </a>
+            </nav>
         </div>
 
-        <nav class="space-y-2">
-            <a href="Statistiques.php" class="flex items-center gap-4 p-3 rounded-xl bg-indigo-600 shadow-lg shadow-indigo-600/30 font-semibold">
-                <i class="fas fa-chart-pie text-white"></i>
-                <span>statistiques</span>
+        <div class="mt-auto p-6 border-t border-white/10 bg-black/20">
+            <a href="../auth/logout.php">
+                <button class="flex items-center gap-4 w-full p-3 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all group">
+                    <i class="fas fa-sign-out-alt group-hover:rotate-12 transition-transform"></i>
+                    <span class="font-bold uppercase text-xs tracking-widest">Déconnexion</span>
+                </button>
             </a>
-            <a href="vehicules.php" class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-white/10 group">
-                <i class="fas fa-car text-slate-400 group-hover:text-indigo-400"></i>
-                <span class="font-medium">Gestion Véhicules</span>
-            </a>
-            <a href="categories.php" class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-white/10 group">
-                <i class="fas fa-tags text-slate-400 group-hover:text-indigo-400"></i>
-                <span class="font-medium">Catégories</span>
-            </a>
-            <a href="reservations.php" class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-white/10 group">
-                <i class="fas fa-calendar-check text-slate-400 group-hover:text-indigo-400"></i>
-                <span class="font-medium">Réservations</span>
-            </a>
-            <a href="avis.php" class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-white/10 group">
-                <i class="fas fa-star text-slate-400 group-hover:text-indigo-400"></i>
-                <span class="font-medium">Avis Clients</span>
-            </a>
-
-            <a href="theme.php" class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-white/10 group">
-                <i class="fas fa-star text-slate-400 group-hover:text-indigo-400"></i>
-                <span class="font-medium">Thémes</span>
-            </a>
-              <a href="approver_article.php" class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-white/10 group">
-                <i class="fas fa-palette text-white"></i>
-                <span>Articles</span>
-            </a>
-             <a href="gestion_tags.php" class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-white/10 group">
-                <i class="fas fa-file-signature text-white"></i>
-                <span>Tags</span>
-            </a>
-              <a href="gestion_commentaire.php" class="flex items-center gap-4 p-3 rounded-xl transition-all duration-200 hover:bg-white/10 group">
-                <i class="fas fa-comments text-white"></i>
-                <span>Commentaires</span>
-            </a>
-        </nav>
-    </div>
-
-    <div class="mt-auto p-6 border-t border-white/10">
-        <a href="../auth/logout.php">
-               <button class="flex items-center gap-4 w-full p-3 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all duration-300">
-            <i class="fas fa-sign-out-alt"></i>
-            <span class="font-bold uppercase text-xs tracking-widest">Déconnexion</span>
-        </button>
-        </a>
-    </div>
-</aside>
+        </div>
+    </aside>
 
 <main class="flex-1 p-10 overflow-y-auto">
 
@@ -200,7 +219,50 @@ $nom=$_SESSION['nom'];
             <p class="text-3xl font-black text-slate-800 mt-2"><?=  $count_cat_ind ?></p>
             <p class="text-emerald-500 text-xs font-bold mt-1"><i class="fas fa-caret-up mr-1"></i>+ nombre categories indisponible</p>
         </div>
+
+
+
+         <div class="glass-card stat-card p-6 rounded-[2rem] shadow-sm border border-slate-100">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
+           <i class="fa-solid fa-palette"></i> 
+
+            </div>
+            <h4 class="text-slate-400 text-xs font-black uppercase tracking-widest">Thémes</h4>
+            <p class="text-3xl font-black text-slate-800 mt-2"><?=  $count_theme ?></p>
+            <p class="text-emerald-500 text-xs font-bold mt-1"><i class="fas fa-caret-up mr-1"></i>+ nombre total de théme</p>
+        </div>
        
+
+         <div class="glass-card stat-card p-6 rounded-[2rem] shadow-sm border border-slate-100">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
+            <i class="fa-solid fa-tags"></i> 
+
+            </div>
+            <h4 class="text-slate-400 text-xs font-black uppercase tracking-widest">Tags</h4>
+            <p class="text-3xl font-black text-slate-800 mt-2"><?=  $count_tag ?></p>
+            <p class="text-emerald-500 text-xs font-bold mt-1"><i class="fas fa-caret-up mr-1"></i>+ nombre total de tag</p>
+        </div>
+
+
+        <div class="glass-card stat-card p-6 rounded-[2rem] shadow-sm border border-slate-100">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
+            <i class="fa-solid fa-newspaper "></i> 
+
+            </div>
+            <h4 class="text-slate-400 text-xs font-black uppercase tracking-widest">Articles </h4>
+            <p class="text-3xl font-black text-slate-800 mt-2"><?=  $count_article_app ?></p>
+            <p class="text-emerald-500 text-xs font-bold mt-1"><i class="fas fa-caret-up mr-1"></i>+ nombre total de article approuve</p>
+        </div>
+
+          <div class="glass-card stat-card p-6 rounded-[2rem] shadow-sm border border-slate-100">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
+           <i class="fa-solid fa-newspaper  text-red-500"></i> 
+
+            </div>
+            <h4 class="text-slate-400 text-xs font-black uppercase tracking-widest">Articles</h4>
+            <p class="text-3xl font-black text-slate-800 mt-2"><?=  $count_article_desapp ?></p>
+            <p class="text-emerald-500 text-xs font-bold mt-1"><i class="fas fa-caret-up mr-1"></i>+ nombre total de article d'esapprouve</p>
+        </div>
 
     </section>
 
